@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\StoreInvoiceRequest;
-use App\Http\Requests\UpdateInvoiceRequest;
-use App\Models\Invoice;
+use App\Http\Controllers\Controller;
+use App\Models\Import;
 
-class InvoiceController extends Controller
+class ImportController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +35,7 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
+    public function show(Import $invoice)
     {
         //
     }

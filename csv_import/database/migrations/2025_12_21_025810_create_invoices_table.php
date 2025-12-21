@@ -1,6 +1,8 @@
 <?php
 
+use App\ImportStatus;
 use App\Models\Customer;
+use App\Models\Import;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,13 +16,15 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->integer('invoice_no')->unique();
+            $table->string('invoice_no')->unique();
             $table->foreignIdFor(Customer::class, 'customer_id');
+            $table->foreignIdFor(Import::class, 'import_id');
             $table->dateTime('date_from');
             $table->dateTime('date_to');
             $table->string('currency');
-            $table->decimal('subtotal');
-            $table->decimal('total');
+            $table->decimal('subtotal', 12, 2)->default(0);
+            $table->decimal('total', 12, 2)->default(0);
+            $table->enum('status', ImportStatus::cases());
             $table->timestamps();
         });
     }

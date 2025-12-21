@@ -2,11 +2,19 @@
 
 namespace App\Policies;
 
-use App\Models\Invoice;
+use App\Models\Import;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
-class InvoicePolicy
+class ImportPolicy
 {
+    /**
+     * Perform pre-authorization checks.
+     */
+    public function before(User $user, string $ability): bool|null
+    {
+        return $user->isAdmin();
+    }
     /**
      * Determine whether the user can view any models.
      */
@@ -18,12 +26,14 @@ class InvoicePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Invoice $invoice): bool
+    public function view(User $user, Import $import): bool
     {
-        if ($user->id == $invoice->customer->user_id) {
+        if ($user->isAdmin()) {
             return true;
         }
-        return false;
+        return $import->invoices()
+            ->whereHas('customer', fn($q) => $q->where('user_id', $user->id))
+            ->exists();
     }
 
     /**
@@ -37,23 +47,23 @@ class InvoicePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Invoice $invoice): bool
+    public function update(User $user, Import $import): Response
     {
-        return $user->isAdmin();
+        return $user->isAdmin() ? Response::allow() : Response::deny('');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Invoice $invoice): bool
+    public function delete(User $user, Import $import): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Invoice $invoice): bool
+    public function restore(User $user, Import $import): bool
     {
         return false;
     }
@@ -61,8 +71,11 @@ class InvoicePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Invoice $invoice): bool
+    public function forceDelete(User $user, Import $import): bool
     {
+        if ($user->isAdmin()) {
+            return true;
+        }
         return false;
     }
 }

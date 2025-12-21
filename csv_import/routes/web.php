@@ -6,4 +6,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/health', fn () => response()->json(['ok' => true]));
+Route::get('/health', fn() => response()->json(['ok' => true]));
