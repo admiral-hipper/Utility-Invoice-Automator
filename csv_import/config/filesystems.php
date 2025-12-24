@@ -53,6 +53,19 @@ return [
             'url' => env('APP_URL') . '/storage',
             'visibility' => 'private',
         ],
+        'import' => [
+            'driver' => 'local',
+            'root' => storage_path('app/invoices'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'private'
+        ],
+
+        'archival' => [
+            'driver' => 'local',
+            'root' => storage_path('app/archival'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'private'
+        ],
 
         's3' => [
             'driver' => 's3',

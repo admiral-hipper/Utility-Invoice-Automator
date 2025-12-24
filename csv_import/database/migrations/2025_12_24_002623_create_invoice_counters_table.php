@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('imports', function (Blueprint $table) {
+        Schema::create('invoice_counters', function (Blueprint $table) {
             $table->id();
-            $table->text('file_path');
-            $table->date('period');
-            $table->integer('total_rows');
+            $table->string('period', 7)->unique(); // YYYY-MM
+            $table->unsignedInteger('next_number')->default(1);
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('imports');
+        Schema::dropIfExists('invoice_counters');
     }
 };

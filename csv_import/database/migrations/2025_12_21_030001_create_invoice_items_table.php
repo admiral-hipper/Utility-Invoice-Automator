@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Invoice;
-use App\Service;
+use App\Enums\Service;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Invoice::class, 'invoice_id');
             $table->enum('service', Service::cases());
-            $table->string('label');
             $table->decimal('amount');
             $table->timestamps();
         });

@@ -1,8 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Enums;
 
-enum ImportStatus: string
+enum InvoiceStatus: string
 {
     case DRAFT = 'draft';
     case PAYED = 'payed';

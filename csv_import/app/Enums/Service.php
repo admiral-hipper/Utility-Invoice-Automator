@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Enums;
 
 enum Service: string
 {
@@ -9,4 +9,5 @@ enum Service: string
     case HEATING = 'heating';
     case TERRITORY = 'territory';
     case WATER = 'water';
+    
 }
