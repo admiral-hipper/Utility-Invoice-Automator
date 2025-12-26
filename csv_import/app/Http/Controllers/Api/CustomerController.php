@@ -35,6 +35,7 @@ class CustomerController extends Controller
         $customer = Customer::factory(
             array_merge(['user_id' => $request->user()->id], $request->only([
                 'full_name',
+                'email',
                 'house_address',
                 'phone',
                 'apartment',

@@ -36,8 +36,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/me/invoices', [\App\Http\Controllers\Api\InvoiceController::class, 'myIndex']);
         Route::get('/me/invoices/{invoice}', [\App\Http\Controllers\Api\InvoiceController::class, 'show']); // через policy
         Route::get('/me/invoices/{invoice}/pdf', [\App\Http\Controllers\Api\InvoiceController::class, 'pdf']); // через policy
-
-        Route::get('/me/imports', [\App\Http\Controllers\Api\ImportController::class, 'myIndex']);
-        Route::get('/me/imports/{import}', [\App\Http\Controllers\Api\ImportController::class, 'show']); // через policy
     });
 });

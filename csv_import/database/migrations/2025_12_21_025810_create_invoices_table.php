@@ -26,6 +26,7 @@ return new class extends Migration
             $table->date('due_date')->nullable()->index();
             $table->timestamp('issued_at')->nullable()->index();
             $table->enum('status', InvoiceStatus::cases());
+            $table->text('pdf_path')->nullable();
             $table->timestamps();
         });
     }

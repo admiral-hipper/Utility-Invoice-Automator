@@ -26,7 +26,7 @@ class InvoiceJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->invoice->load(['customer', 'items', 'import']);
+        $this->invoice->loadMissing(['customer', 'items', 'import']);
         $paymentRef = $this->invoice->payment_ref;
 
         $billing = config('billing');
@@ -41,14 +41,19 @@ class InvoiceJob implements ShouldQueue
         $qrPng = QrCode::format('png')->size(220)->margin(1)->generate($qrPayload);
         $qrBase64 = 'data:image/png;base64,' . base64_encode($qrPng);
 
-        $filename = "invoice-{$this->invoice->invoice_no}.pdf";
+        $filename =  $this->invoice->period . '/' . "invoice-{$this->invoice->invoice_no}.pdf";
         $generator = new InvoiceGenerator($this->invoice, $billing, $qrBase64);
         $contents = $generator->generate()->output();
-        (new CustomerStorage())->putToUserDir(
+        $storage = (new CustomerStorage());
+        $storage->putToUserDir(
             $this->invoice->customer,
             $filename,
-            $this->invoice . '/' . $filename,
-            $contents
+            $contents,
         );
+        $this->invoice->pdf_path = $storage->path(
+            $this->invoice->customer,
+            $filename
+        );
+        $this->invoice->save();
     }
 }

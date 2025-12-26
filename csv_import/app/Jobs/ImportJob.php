@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use League\Csv\Reader;
 use ZipArchive;
 
@@ -40,7 +41,7 @@ class ImportJob implements ShouldQueue
             $period = Carbon::now()->format('Y-m');
             $dueDate = Carbon::now()->addDays(10);
             $customerId = Customer::query()
-                ->where('phone', $row->phone)->where('full_name', $row->full_name)->first();
+                ->where('phone', $row->phone)->where('email', $row->email)->first();
             [$invoiceNo, $paymentRef] = app(InvoiceNumberService::class)->nextInvoiceNo($period); // '2025-12'
 
             $invoice = Invoice::create([
@@ -70,8 +71,11 @@ class ImportJob implements ShouldQueue
     {
         foreach ($row->toArray() as $column => $value) {
             if (empty($value)) {
-                throw new ImportException("Value of $column is empty (ID:{$row->id})");
+                throw new ImportException("Value of $column is empty! (ID:{$row->id})");
             }
+        }
+        if (!filter_var($row->email, FILTER_VALIDATE_EMAIL)) {
+            throw new ImportException("Value of email is invalid! (ID:{$row->id})");
         }
     }
 

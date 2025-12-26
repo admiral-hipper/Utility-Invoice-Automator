@@ -22,7 +22,7 @@ final class CustomerStorage
      * @param \Psr\Http\Message\StreamInterface|\Illuminate\Http\File|\Illuminate\Http\UploadedFile|string|resource $path
      * @param mixed $options
      */
-    public function putToUserDir($customer, $path, $contents, $options): bool
+    public function putToUserDir($customer, $path, $contents, $options = []): bool
     {
         return $this->disk->put("{$customer->id}/" . $path, $contents, $options);
     }

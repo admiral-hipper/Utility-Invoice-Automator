@@ -13,6 +13,7 @@ class ImportRowDTO
         readonly public int $id,
         readonly public string $full_name,
         readonly public string $phone,
+        readonly public string $email,
         readonly public string $house_address,
         readonly public string $apartment,
         readonly public float $gas,

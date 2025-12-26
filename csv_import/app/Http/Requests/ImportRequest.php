@@ -33,6 +33,7 @@ class ImportRequest extends FormRequest
                 'mimetypes:text/plain,text/csv,application/csv,application/vnd.ms-excel',
                 new CSVHeaderRule([
                     'full_name',
+                    'email',
                     'phone',
                     'house_address',
                     'apartment',

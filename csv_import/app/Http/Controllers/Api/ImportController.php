@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ImportResource;
 use App\Jobs\ImportJob;
 use App\Models\Import;
 use Carbon\Carbon;
