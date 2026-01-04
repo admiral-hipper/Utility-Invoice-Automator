@@ -11,4 +11,10 @@ class InvoiceItem extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
+
+    protected $fillable = [
+        'invoice_id',
+        'service',
+        'amount'
+    ];
 }

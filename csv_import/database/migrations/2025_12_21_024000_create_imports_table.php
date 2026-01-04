@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ImportStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,9 @@ return new class extends Migration
             $table->id();
             $table->text('file_path');
             $table->string('period');
-            $table->integer('total_rows');
+            $table->integer('total_rows')->nullable();
+            $table->enum('status', ImportStatus::cases());
+            $table->string('errors')->nullable();
             $table->timestamps();
         });
     }

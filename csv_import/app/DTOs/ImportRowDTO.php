@@ -10,7 +10,6 @@ class ImportRowDTO
     use ToArray, StaticCreateSelf;
 
     public function __construct(
-        readonly public int $id,
         readonly public string $full_name,
         readonly public string $phone,
         readonly public string $email,

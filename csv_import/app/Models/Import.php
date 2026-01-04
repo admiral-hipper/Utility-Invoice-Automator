@@ -14,6 +14,14 @@ class Import extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'period',
+        'file_path',
+        'errors',
+        'status',
+        'total_rows'
+    ];
+
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
