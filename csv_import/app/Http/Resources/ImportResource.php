@@ -14,6 +14,10 @@ class ImportResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'url' => route('download-import',['import' => $this]),
+            'period' => $this->period,
+            'total_rows' => $this->total_rows,
+        ];
     }
 }

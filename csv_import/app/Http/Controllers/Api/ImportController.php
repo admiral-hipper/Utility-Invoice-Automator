@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ImportException;
 use App\Http\Controllers\Controller;
 use App\Jobs\ImportJob;
 use App\Models\Import;
@@ -41,11 +42,15 @@ class ImportController extends Controller
     public function store(Request $request): JsonResource
     {
         $file = $request->file('import_file');
-        $filename = 'Import_' . Carbon::now()->format('Y-m-d-His') . '.csv';
-        Storage::disk('imports')->put($filename, $file->get());
-        $filepath = Storage::disk('imports')->path($filename);
+        $period = $request->input('period') ?? Carbon::now()->format('Y-m');
+        if (!Carbon::canBeCreatedFromFormat($period, 'Y-m')) {
+            throw new ImportException('Period date is invalid (Format should be Y-m)');
+        }
+        $filename = 'Import_' . $period . '_' . Carbon::now()->format('YmdHis') . '.csv';
+        Storage::disk('import')->put($filename, $file->get());
+        $filepath = Storage::disk('import')->path($filename);
         $import = Import::factory([
-            'period' => Carbon::now()->format('Y-m'),
+            'period' => $period,
             'file_path' => $filepath
         ])->create();
         ImportJob::dispatch($import);
@@ -55,9 +60,14 @@ class ImportController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Import $invoice)
+    public function show(Import $import)
     {
-        //
+        return $import->toResource();
+    }
+
+    public function download(Import $import)
+    {
+        return Storage::download($import->file_path, basename($import->file_path));
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace App\DTOs;
 
-use App\Trait\StaticCreateSelf;
-use App\Trait\ToArray;
+use App\Traits\StaticCreateSelf;
+use App\Traits\ToArray;
 
 class ImportRowDTO
 {
@@ -21,5 +21,6 @@ class ImportRowDTO
         readonly public float $heating,
         readonly public float $territory,
         readonly public float $water,
+        readonly string $currency,
     ) {}
 }

@@ -2,8 +2,8 @@
 
 namespace App\DTOs;
 
-use App\Trait\StaticCreateSelf;
-use App\Trait\ToArray;
+use App\Traits\StaticCreateSelf;
+use App\Traits\ToArray;
 
 class CustomerDTO
 {

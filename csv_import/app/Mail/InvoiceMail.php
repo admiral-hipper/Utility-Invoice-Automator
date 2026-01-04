@@ -31,7 +31,7 @@ class InvoiceMail extends Mailable
     {
         return new Envelope(
             subject: "Invoice {$this->invoice->invoice_no} ({$this->invoice->period})",
-            from: new Address(config('mail.from'))
+            from: new Address(...config('mail.from'))
         );
     }
 

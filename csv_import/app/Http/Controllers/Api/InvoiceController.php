@@ -3,22 +3,40 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Invoice;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the invoice.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $perPage = (int) $request->query('per_page', 15);
+        $perPage = max(1, min($perPage, 100)); // clamp
+
+        $imports = Invoice::query()
+            ->latest()
+            ->paginate($perPage);
+        return $imports->toResourceCollection();
+    }
+
+    /** Display a listing of  */
+    public function myIndex(Request $request)
+    {
+        $perPage = (int) $request->query('per_page', 15);
+        $perPage = max(1, min($perPage, 100)); // clamp
+
+        $imports = Invoice::query()->where('customer_id', $request->user()->customer->id)
+            ->latest()
+            ->paginate($perPage);
+        return $imports->toResourceCollection();
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new invoice.
      */
     public function create()
     {
@@ -26,23 +44,23 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created invoice in storage.
      */
-    public function store(StoreInvoiceRequest $request)
+    public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified invoice.
      */
     public function show(Invoice $invoice)
     {
-        //
+        return $invoice->toResource();
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified invoice.
      */
     public function edit(Invoice $invoice)
     {
@@ -50,7 +68,7 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified invoice in storage.
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
@@ -58,7 +76,7 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified invoice from storage.
      */
     public function destroy(Invoice $invoice)
     {

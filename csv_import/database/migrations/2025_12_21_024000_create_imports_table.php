@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('imports', function (Blueprint $table) {
             $table->id();
             $table->text('file_path');
-            $table->date('period');
+            $table->string('period');
             $table->integer('total_rows');
             $table->timestamps();
         });

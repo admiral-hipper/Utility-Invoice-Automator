@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-use App\Trait\StaticCreateSelf;
+use App\Traits\StaticCreateSelf;
 
 class BillingDTO
 {

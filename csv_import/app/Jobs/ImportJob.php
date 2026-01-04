@@ -11,12 +11,10 @@ use App\Models\Import;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Services\Invoice\InvoiceNumberService;
-use App\Services\Storage\CustomerStorage;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use League\Csv\Reader;
 use ZipArchive;
 
@@ -34,10 +32,10 @@ class ImportJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $csv = Reader::from($this->import->file_path, 'r')->setHeaderOffset(0);
+        $csv = Reader::from(Storage::disk('import')->path($this->import->file_path), 'r')->setHeaderOffset(0);
 
         foreach ($csv->getRecords() as $id => $record) {
-            $row = ImportRowDTO::create(array_merge([$id], $record));
+            $row = ImportRowDTO::create(array_merge(['id' => $id], $record));
             $period = Carbon::now()->format('Y-m');
             $dueDate = Carbon::now()->addDays(10);
             $customerId = Customer::query()

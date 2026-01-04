@@ -1,19 +1,39 @@
 <?php
 
-namespace App\Trait;
+namespace App\Traits;
+
+use ReflectionClass;
 
 trait StaticCreateSelf
 {
-    public static function create(array $values): self
+   public static function create(array $values): static
     {
-        $dto = new self();
+        $rc = new ReflectionClass(static::class);
+        $ctor = $rc->getConstructor();
 
-        foreach ($values as $key => $value) {
-            if (property_exists($dto, $key)) {
-                $dto->$key = $value;
-            }
+        // Если конструктора нет — тогда можно просто создать
+        if (!$ctor) {
+            return new static();
         }
 
-        return $dto;
+        $args = [];
+        foreach ($ctor->getParameters() as $p) {
+            $name = $p->getName();
+
+            if (array_key_exists($name, $values)) {
+                $args[$name] = $values[$name];
+                continue;
+            }
+
+            if ($p->isDefaultValueAvailable()) {
+                $args[$name] = $p->getDefaultValue();
+                continue;
+            }
+
+            throw new \InvalidArgumentException("Missing required DTO field: {$name}");
+        }
+
+        // PHP 8+: named args
+        return new static(...$args);
     }
 }

@@ -55,7 +55,7 @@ return [
         ],
         'import' => [
             'driver' => 'local',
-            'root' => storage_path('app/invoices'),
+            'root' => storage_path('app/import'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'private'
         ],
