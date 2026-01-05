@@ -8,13 +8,10 @@ use App\Jobs\InvoiceJob;
 use App\Models\Customer;
 use App\Models\Import;
 use App\Models\User;
-use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use ReflectionClass;
 use Tests\TestCase;
 
 class ImportJobTest extends TestCase
@@ -28,19 +25,19 @@ class ImportJobTest extends TestCase
 
         User::factory()->has(Customer::factory([
             'email' => 'example1@gmail.com',
-            'phone' => '+40720100101'
+            'phone' => '+40720100101',
         ]))->create();
 
         User::factory()->has(Customer::factory([
             'email' => 'example2@gmail.com',
-            'phone' => '+40720100102'
+            'phone' => '+40720100102',
         ]))->create();
 
         $csv = implode("\n", [
-            "full_name,email,phone,house_address,apartment,gas,electricity,heating,territory,water,currency",
-            "Andrei Popescu,example1@gmail.com,+40720100101,Str. Lalelelor 12,10,120.50,85.20,210.00,32.00,55.10,RON",
-            "Ioana Ionescu,example2@gmail.com,+40720100102,Str. Lalelelor 12,11,98.30,74.00,190.00,32.00,49.80,RON",
-        ]) . "\n";
+            'full_name,email,phone,house_address,apartment,gas,electricity,heating,territory,water,currency',
+            'Andrei Popescu,example1@gmail.com,+40720100101,Str. Lalelelor 12,10,120.50,85.20,210.00,32.00,55.10,RON',
+            'Ioana Ionescu,example2@gmail.com,+40720100102,Str. Lalelelor 12,11,98.30,74.00,190.00,32.00,49.80,RON',
+        ])."\n";
 
         $path = 'csv/test_2025-12.csv';
         Storage::disk('import')->put($path, $csv);
@@ -75,15 +72,15 @@ class ImportJobTest extends TestCase
 
         User::factory()->has(Customer::factory([
             'email' => 'example1@gmail.com',
-            'phone' => '+40720100101'
+            'phone' => '+40720100101',
         ]))->create();
 
         // Second is wrong
         $csv = implode("\n", [
-            "full_name,email,phone,house_address,apartment,gas,electricity,heating,territory,water,currency",
-            "Andrei Popescu,example1@gmail.com,+40720100101,Str. Lalelelor 12,10,120.50,85.20,210.00,32.00,55.10,RON",
-            ",,,Str. Lalelelor 12,,foo,bar,,,," // Trash
-        ]) . "\n";
+            'full_name,email,phone,house_address,apartment,gas,electricity,heating,territory,water,currency',
+            'Andrei Popescu,example1@gmail.com,+40720100101,Str. Lalelelor 12,10,120.50,85.20,210.00,32.00,55.10,RON',
+            ',,,Str. Lalelelor 12,,foo,bar,,,,', // Trash
+        ])."\n";
 
         $path = 'test_invalid_2025-12.csv';
         Storage::disk('import')->put($path, $csv);

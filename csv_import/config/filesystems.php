@@ -41,7 +41,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL') . '/storage',
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -50,21 +50,21 @@ return [
         'invoices' => [
             'driver' => 'local',
             'root' => storage_path('app/invoices'),
-            'url' => env('APP_URL') . '/storage',
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'private',
         ],
         'import' => [
             'driver' => 'local',
             'root' => storage_path('app/import'),
             'url' => env('APP_URL').'/storage',
-            'visibility' => 'private'
+            'visibility' => 'private',
         ],
 
         'archival' => [
             'driver' => 'local',
             'root' => storage_path('app/archival'),
             'url' => env('APP_URL').'/storage',
-            'visibility' => 'private'
+            'visibility' => 'private',
         ],
 
         's3' => [

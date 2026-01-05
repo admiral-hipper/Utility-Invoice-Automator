@@ -6,14 +6,14 @@ use ReflectionClass;
 
 trait StaticCreateSelf
 {
-   public static function create(array $values): static
+    public static function create(array $values): static
     {
         $rc = new ReflectionClass(static::class);
         $ctor = $rc->getConstructor();
 
         // Если конструктора нет — тогда можно просто создать
-        if (!$ctor) {
-            return new static();
+        if (! $ctor) {
+            return new static;
         }
 
         $args = [];
@@ -22,11 +22,13 @@ trait StaticCreateSelf
 
             if (array_key_exists($name, $values)) {
                 $args[$name] = $values[$name];
+
                 continue;
             }
 
             if ($p->isDefaultValueAvailable()) {
                 $args[$name] = $p->getDefaultValue();
+
                 continue;
             }
 

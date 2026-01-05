@@ -3,20 +3,19 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Filament\Resources\CustomerResource\RelationManagers\InvoicesRelationManager;
+use App\Filament\Resources\CustomerResource\RelationManagers\UsersRelationManager;
 use App\Models\Customer;
 use App\Models\User;
-use Filament\Actions\ViewAction;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerResource extends Resource
 {
@@ -30,9 +29,31 @@ class CustomerResource extends Resource
             ->schema([
                 Select::make('user_id')
                     ->label('User')
-                    ->placeholder('Choose user')
-                    ->options(User::query()->pluck('email', 'id'))
-                    ->searchable()->required(),
+                    ->relationship(
+                        name: 'user',
+                        titleAttribute: 'email',
+                        modifyQueryUsing: function (Builder $query) {
+                            $user = auth()->user();
+
+                            if ($user && method_exists($user, 'isAdmin') && $user->isAdmin()) {
+                                return;
+                            }
+                            $query->whereKey(auth()->id());
+                        },
+                    )
+                    ->getOptionLabelFromRecordUsing(fn (User $record) => "{$record->id}. {$record->name} ({$record->email})")
+                    ->searchable(['email', 'id'])
+                    ->preload()
+                    ->required()
+                    ->default(fn () => auth()->id())
+                    ->disabled(fn () => ! auth()->user()?->isAdmin())
+                    ->dehydrateStateUsing(fn ($state) => auth()->user()?->isAdmin() ? $state : auth()->id()),
+                TextInput::make('full_name')->required(),
+                TextInput::make('house_address')->required(),
+                TextInput::make('apartment')->required(),
+                TextInput::make('email')->email()->required(),
+                TextInput::make('phone')->type('phone')->required(),
+
             ]);
     }
 
@@ -49,8 +70,9 @@ class CustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                \Filament\Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()->label(''),
+                \Filament\Tables\Actions\ViewAction::make()->label(''),
+                Tables\Actions\DeleteAction::make()->label('')->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -62,8 +84,21 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            InvoicesRelationManager::class
+            InvoicesRelationManager::class,
+            UsersRelationManager::class,
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = Auth::user();
+
+        if ($user && (method_exists($user, 'isAdmin') ? $user->isAdmin() : (bool) ($user->is_admin ?? false))) {
+            return $query;
+        }
+
+        return $query->where('user_id', auth()->id());
     }
 
     public static function getPages(): array
@@ -72,7 +107,7 @@ class CustomerResource extends Resource
             'index' => Pages\ListCustomers::route('/'),
             'create' => Pages\CreateCustomer::route('/create'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
-            'view' => Pages\ViewCustomer::route('/{record}')
+            'view' => Pages\ViewCustomer::route('/{record}'),
         ];
     }
 }

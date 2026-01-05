@@ -23,7 +23,7 @@ class InvoiceNumberServiceTest extends TestCase
         $this->assertMatchesRegularExpression('/^INV-202512-\d{6}$/', $no2);
         $this->assertNotEquals($no1, $no2);
 
-        $this->assertEquals('PAY:' . $no1, $ref1);
-        $this->assertEquals('PAY:' . $no2, $ref2);
+        $this->assertEquals('PAY:'.$no1, $ref1);
+        $this->assertEquals('PAY:'.$no2, $ref2);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\DTOs\BillingDTO;
 use App\Models\Invoice;
 use App\Services\Invoice\InvoiceGenerator;
 use App\Services\Storage\CustomerStorage;
@@ -29,28 +30,28 @@ class InvoiceJob implements ShouldQueue
         $this->invoice->loadMissing(['customer', 'items', 'import']);
         $paymentRef = $this->invoice->payment_ref;
 
-        $billing = config('billing');
+        $billing = BillingDTO::create(config('billing'));
         $qrPayload = implode("\n", [
-            "IBAN=" . ($billing['iban'] ?? ''),
-            "AMOUNT=" . number_format((float) $this->invoice->total, 2, '.', ''),
-            "CURRENCY=" . ($invoice->currency ?? 'RON'),
-            "REFERENCE=" . $paymentRef,
-            "BENEFICIARY=" . ($billing['company_name'] ?? ''),
+            'IBAN='.($billing->iban ?? ''),
+            'AMOUNT='.number_format((float) $this->invoice->total, 2, '.', ''),
+            'CURRENCY='.($invoice->currency ?? 'RON'),
+            'REFERENCE='.$paymentRef,
+            'BENEFICIARY='.($billing->company_name ?? ''),
         ]);
 
         $qrPng = QrCode::format('png')->size(220)->margin(1)->generate($qrPayload);
-        $qrBase64 = 'data:image/png;base64,' . base64_encode($qrPng);
+        $qrBase64 = 'data:image/png;base64,'.base64_encode($qrPng);
 
-        $filename =  $this->invoice->period . '/' . "invoice-{$this->invoice->invoice_no}.pdf";
+        $filename = $this->invoice->period.'/'."invoice-{$this->invoice->invoice_no}.pdf";
         $generator = new InvoiceGenerator($this->invoice, $billing, $qrBase64);
         $contents = $generator->generate()->output();
-        $storage = (new CustomerStorage());
+        $storage = (new CustomerStorage);
         $storage->putToUserDir(
             $this->invoice->customer,
             $filename,
             $contents,
         );
-        $this->invoice->pdf_path = $storage->path(
+        $this->invoice->pdf_path = $storage->customerPath(
             $this->invoice->customer,
             $filename
         );

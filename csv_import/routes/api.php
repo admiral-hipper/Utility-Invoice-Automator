@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/auth/me', [\App\Http\Controllers\Api\AuthController::class, 'me']);
     Route::post('/auth/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
@@ -29,7 +28,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/invoices/{invoice}', [\App\Http\Controllers\Api\InvoiceController::class, 'show']);
             Route::get('/invoices/{invoice}/pdf', [\App\Http\Controllers\Api\InvoiceController::class, 'pdf'])->can('view', 'invoice');
         });
-        Route::can('update','invoice')->group(function () {
+        Route::can('update', 'invoice')->group(function () {
             Route::post('/invoices/{invoice}/issue', [\App\Http\Controllers\Api\InvoiceController::class, 'issue']);
             Route::post('/invoices/{invoice}/mark-paid', [\App\Http\Controllers\Api\InvoiceController::class, 'markPaid']);
         });

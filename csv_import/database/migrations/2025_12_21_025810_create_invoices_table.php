@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('currency', 3)->default('RON')->index(); // RON/EUR
             $table->decimal('total', 12, 2)->default(0);
             $table->date('due_date')->nullable()->index();
+            $table->date('sent_at')->nullable();
             $table->timestamp('issued_at')->nullable()->index();
             $table->enum('status', InvoiceStatus::cases());
             $table->text('pdf_path')->nullable();

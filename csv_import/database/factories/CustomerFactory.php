@@ -26,9 +26,10 @@ class CustomerFactory extends Factory
             'apartment' => (string) $this->faker->numberBetween(1, 200),
         ];
     }
+
     public function forUser(User $user): static
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'user_id' => $user->id,
             'email' => $user->email,
         ]);

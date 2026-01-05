@@ -15,6 +15,15 @@ class Invoice extends Model
     /** @use HasFactory<\Database\Factories\InvoiceFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'invoice_no',
+        'period',
+        'issued_at',
+        'status',
+        'due_date',
+        'sent_at',
+    ];
+
     public function import(): BelongsTo
     {
         return $this->belongsTo(Import::class);

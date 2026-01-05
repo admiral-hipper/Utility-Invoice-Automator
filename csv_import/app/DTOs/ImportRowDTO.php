@@ -7,19 +7,19 @@ use App\Traits\ToArray;
 
 class ImportRowDTO
 {
-    use ToArray, StaticCreateSelf;
+    use StaticCreateSelf, ToArray;
 
     public function __construct(
-        readonly public string $full_name,
-        readonly public string $phone,
-        readonly public string $email,
-        readonly public string $house_address,
-        readonly public string $apartment,
-        readonly public float $gas,
-        readonly public float $electricity,
-        readonly public float $heating,
-        readonly public float $territory,
-        readonly public float $water,
-        readonly string $currency,
+        public readonly string $full_name,
+        public readonly string $phone,
+        public readonly string $email,
+        public readonly string $house_address,
+        public readonly string $apartment,
+        public readonly float $gas,
+        public readonly float $electricity,
+        public readonly float $heating,
+        public readonly float $territory,
+        public readonly float $water,
+        public readonly string $currency,
     ) {}
 }

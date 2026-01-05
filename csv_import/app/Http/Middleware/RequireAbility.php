@@ -15,9 +15,10 @@ class RequireAbility
     public function handle(Request $request, Closure $next, string $ability)
     {
         $token = $request->user()?->currentAccessToken();
-        if (!$token || !$token->can($ability)) {
+        if (! $token || ! $token->can($ability)) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
+
         return $next($request);
     }
 }

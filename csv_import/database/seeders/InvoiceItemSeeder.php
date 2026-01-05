@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Enums\Service;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class InvoiceItemSeeder extends Seeder
@@ -24,7 +23,7 @@ class InvoiceItemSeeder extends Seeder
                 $amount = random_int(1000, 30000) / 100; // 10.00..300.00
                 InvoiceItem::query()->create([
                     'invoice_id' => $inv->id,
-                    'label' => $service,
+                    'service' => $service,
                     'amount' => $amount,
                 ]);
                 $sum += $amount;

@@ -43,7 +43,7 @@ class InvoiceMail extends Mailable
         return new Content(
             view: 'emails.invoice',
             with: [
-                'invoice' => $this->invoice
+                'invoice' => $this->invoice,
             ]
         );
     }

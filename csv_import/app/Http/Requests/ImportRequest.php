@@ -25,7 +25,7 @@ class ImportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'import_file' =>  [
+            'import_file' => [
                 'required',
                 'file',
                 'max:10240',                 // KB (10 MB)
@@ -41,8 +41,8 @@ class ImportRequest extends FormRequest
                     'electricity',
                     'heating',
                     'territory',
-                    'water'
-                ])
+                    'water',
+                ]),
             ],
         ];
     }

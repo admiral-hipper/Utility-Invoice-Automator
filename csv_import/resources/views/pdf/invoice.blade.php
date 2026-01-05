@@ -3,8 +3,13 @@
 <head>
   <meta charset="utf-8">
   <style>
-    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #111; }
-    .row { display:flex; justify-content:space-between; gap:16px; }
+    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #111; width: 100%; }
+
+    .cols { width: 100%; border-collapse: collapse; padding: 5px;}
+    .cols td { vertical-align: top; padding: 0; }
+    .gap16 td:first-child { padding-right: 16px; }
+    .gap12 td:first-child { padding-right: 12px; }
+
     .box { border:1px solid #ddd; padding:10px; }
     table { width:100%; border-collapse:collapse; margin-top:12px; }
     th,td { border:1px solid #ddd; padding:8px; }
@@ -15,41 +20,51 @@
 </head>
 <body>
 
-<div class="row">
-  <div style="width:60%">
-    <h2 style="margin:0 0 6px">INVOICE</h2>
-    <div><b>No:</b> {{ $invoice->invoice_no }}</div>
-    <div><b>Period:</b> {{ $invoice->period }}</div>
-    <div><b>Currency:</b> {{ $invoice->currency }}</div>
-    <div><b>Status:</b> {{ $invoice->status }}</div>
-    <div><b>Issued at:</b> {{ $invoice->issued_at ?? '—' }}</div>
-    <div><b>Due date:</b> {{ $invoice->due_date ?? '—' }}</div>
-    <div class="muted" style="margin-top:6px"><b>Payment reference:</b> {{ $paymentRef }}</div>
-  </div>
+<!-- HEADER: 2 columns -->
+<table class="cols gap16">
+  <tr>
+    <td style="width:60%; padding:10px">
+      <h2 style="margin:0 0 6px">INVOICE</h2>
+      <div><b>No:</b> {{ $invoice->invoice_no }}</div>
+      <div><b>Period:</b> {{ $invoice->period }}</div>
+      <div><b>Currency:</b> {{ $invoice->currency }}</div>
+      <div><b>Status:</b> {{ $invoice->status }}</div>
+      <div><b>Issued at:</b> {{ $invoice->issued_at ?? '—' }}</div>
+      <div><b>Due date:</b> {{ $invoice->due_date ?? '—' }}</div>
+      <div class="muted" style="margin-top:6px"><b>Payment reference:</b> {{ $paymentRef }}</div>
+    </td>
 
-  <div style="width:40%; text-align:right">
-    <div><b>Pay via QR</b></div>
-    <img src="{{ $qrBase64 }}" style="width:140px; height:140px" alt="QR">
-    <div class="muted" style="margin-top:6px">Include reference: {{ $paymentRef }}</div>
-  </div>
-</div>
+    <td style="width:40%; padding:10px" class="right">
+      <div><b>Pay via QR</b></div>
+      <img src="{{ $qrBase64 }}" style="width:140px; height:140px" alt="QR">
+      <div class="muted" style="margin-top:6px">Include reference: {{ $paymentRef }}</div>
+    </td>
+  </tr>
+</table>
 
-<div class="row" style="margin-top:12px">
-  <div style="width:50%" class="box">
-    <div><b>Billed to</b></div>
-    <div>{{ $invoice->customer->full_name ?? '—' }}</div>
-    <div>{{ $invoice->customer->phone ?? '—' }}</div>
-    <div>{{ $invoice->customer->house_address ?? '—' }}, apt {{ $invoice->customer->apartment ?? '—' }}</div>
-  </div>
+<!-- BILLED TO / BENEFICIARY: 2 columns -->
+<table class="cols gap12" style="margin-top:12px">
+  <tr>
+    <td style="width:50%; padding:10px">
+      <div class="">
+        <div><b>Billed to</b></div>
+        <div>{{ $invoice->customer->full_name ?? '—' }}</div>
+        <div>{{ $invoice->customer->phone ?? '—' }}</div>
+        <div>{{ $invoice->customer->house_address ?? '—' }}, apt {{ $invoice->customer->apartment ?? '—' }}</div>
+      </div>
+    </td>
 
-  <div style="width:50%" class="box">
-    <div><b>Beneficiary</b></div>
-    <div>{{ $billing->company_name ?? '—' }}</div>
-    <div>{{ $billing->company_id ?? '—' }}</div>
-    <div>{{ $billing->address ?? '—' }}</div>
-    <div>{{ $billing->email ?? '—' }} / {{ $billing->phone ?? '—' }}</div>
-  </div>
-</div>
+    <td style="width:50%; padding:10px">
+      <div class="">
+        <div><b>Beneficiary</b></div>
+        <div>{{ $billing->company_name ?? '—' }}</div>
+        <div>{{ $billing->company_id ?? '—' }}</div>
+        <div>{{ $billing->address ?? '—' }}</div>
+        <div>{{ $billing->email ?? '—' }} / {{ $billing->phone ?? '—' }}</div>
+      </div>
+    </td>
+  </tr>
+</table>
 
 <table>
   <thead>

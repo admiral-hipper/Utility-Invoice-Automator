@@ -4,9 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -14,8 +12,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
@@ -30,7 +26,7 @@ class UserResource extends Resource
                 TextInput::make('name')->required(),
                 TextInput::make('email')->email()->required(),
                 TextInput::make('password')->password()->required(),
-                Select::make('role')->options(UserRole::class),
+                Select::make('role')->options(UserRole::class)->dehydrated(fn () => auth()->user()?->isAdmin()),
             ]);
     }
 
@@ -42,10 +38,10 @@ class UserResource extends Resource
                 TextColumn::make('email'),
                 TextColumn::make('role')->sortable()
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         UserRole::CUSTOMER->value => 'gray',
                         UserRole::ADMIN->value => 'danger',
-                    })
+                    }),
             ])
             ->filters([
                 //

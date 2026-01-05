@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\InvoiceCounter;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class InvoiceCounterSeeder extends Seeder

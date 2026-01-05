@@ -39,29 +39,29 @@ class InvoiceJobTest extends TestCase
         $pdfMock = Mockery::mock();
         $pdfMock->shouldReceive('output')->once()->andReturn('%PDF-FAKE%');
 
-        $generatorOverload = Mockery::mock('overload:' . InvoiceGenerator::class);
-        $generatorOverload->shouldReceive('__construct')->once(); // конструктор вызовется
+        $generatorOverload = Mockery::mock('overload:'.InvoiceGenerator::class);
+        $generatorOverload->shouldReceive('__construct')->once(); //
         $generatorOverload->shouldReceive('generate')->once()->andReturn($pdfMock);
 
         $expectedFilename = '2025-12/invoice-INV-202512-000001.pdf';
         $expectedPath = "invoices/{$customer->id}/{$expectedFilename}";
 
-        $storageOverload = Mockery::mock('overload:' . CustomerStorage::class);
+        $storageOverload = Mockery::mock('overload:'.CustomerStorage::class);
         $storageOverload->shouldReceive('__construct')->once();
 
         $storageOverload->shouldReceive('putToUserDir')
             ->once()
             ->withArgs(function ($custArg, $filenameArg, $contentsArg) use ($customer, $expectedFilename) {
-                return (int)$custArg->id === (int)$customer->id
+                return (int) $custArg->id === (int) $customer->id
                     && $filenameArg === $expectedFilename
                     && $contentsArg === '%PDF-FAKE%';
             })
             ->andReturnTrue();
 
-        $storageOverload->shouldReceive('path')
+        $storageOverload->shouldReceive('customerPath')
             ->once()
             ->withArgs(function ($custArg, $filenameArg) use ($customer, $expectedFilename) {
-                return (int)$custArg->id === (int)$customer->id
+                return (int) $custArg->id === (int) $customer->id
                     && $filenameArg === $expectedFilename;
             })
             ->andReturn($expectedPath);

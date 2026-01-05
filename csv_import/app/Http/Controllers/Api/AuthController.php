@@ -18,7 +18,7 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
         $user = User::where('email', $data['email'])->first();
-        if (!$user || Hash::check($data['password'], $user->password)) {
+        if (! $user || Hash::check($data['password'], $user->password)) {
             throw new ValidationException('Incorrect email or password');
         }
 
@@ -31,7 +31,7 @@ class AuthController extends Controller
             'data' => [
                 'token' => $token,
                 'token_type' => 'Bearer',
-            ]
+            ],
         ]);
     }
 

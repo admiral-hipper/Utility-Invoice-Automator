@@ -2,10 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\Customer;
 use App\Models\User;
 
-class CustomerPolicy
+class UserPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -15,17 +14,12 @@ class CustomerPolicy
         return true;
     }
 
-    public function before(User $user): ?bool
-    {
-        return $user->isAdmin() ? true : null;
-    }
-
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Customer $customer): bool
+    public function view(User $user, User $model): bool
     {
-        return $user->id == $customer->user_id;
+        return $user->id == $model->id || $user->isAdmin();
     }
 
     /**
@@ -33,38 +27,38 @@ class CustomerPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Customer $customer): bool
+    public function update(User $user, User $model): bool
     {
-        return $user->id == $customer->user_id;
+        return $user->isAdmin() || $user->id == $model->id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Customer $customer): bool
+    public function delete(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin() || $user->id == $model->id;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Customer $customer): bool
+    public function restore(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin() || $user->id == $model->id;
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Customer $customer): bool
+    public function forceDelete(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin() || $user->id == $model->id;
     }
 }

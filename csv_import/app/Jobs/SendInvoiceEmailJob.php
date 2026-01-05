@@ -11,6 +11,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
+use function Symfony\Component\Clock\now;
+
 class SendInvoiceEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -30,5 +32,7 @@ class SendInvoiceEmailJob implements ShouldQueue
     {
         $invoice = Invoice::query()->findOrFail($this->invoiceId);
         Mail::to($this->toEmail)->send(new InvoiceMail($invoice));
+        $invoice->sent_at = now();
+        $invoice->save();
     }
 }

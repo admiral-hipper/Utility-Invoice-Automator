@@ -18,6 +18,7 @@ class CustomerController extends Controller
     {
         $this->authorizeResource(Customer::class, 'customer');
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -76,6 +77,7 @@ class CustomerController extends Controller
             'phone',
             'apartment',
         ]));
+
         return new CustomerResource($customer);
     }
 
@@ -85,12 +87,13 @@ class CustomerController extends Controller
     public function destroy(Customer $customer): JsonResponse
     {
         $customer->delete();
+
         return response()->json([
             'data' => [
                 'message' => 'Customer was successfully deleted',
             ],
             'code' => 200,
-            'status' => 'Successful'
+            'status' => 'Successful',
         ]);
     }
 }

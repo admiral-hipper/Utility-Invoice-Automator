@@ -2,9 +2,9 @@
 
 namespace App\Services\Import\Importers;
 
-use Generator;
 use App\DTOs\ImportRowDTO;
 use App\Services\Import\Importer;
+use Generator;
 use League\Csv\Reader;
 
 class CSVImporter extends Importer
@@ -14,6 +14,7 @@ class CSVImporter extends Importer
     public function supports(string $filepath): bool
     {
         $ext = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
+
         return $ext === 'csv';
     }
 
@@ -21,7 +22,7 @@ class CSVImporter extends Importer
 
     public function getRows(string $filepath): Generator
     {
-        $this->csv = Reader::from($filepath, 'r')->setHeaderOffset(0);
+        $this->csv = Reader::from($filepath, 'r')->setHeaderOffset(0)->setDelimiter(';');
         $this->validateHeader($this->csv->getHeader());
         foreach ($this->csv->getRecords() as $id => $record) {
             $this->validateRow(array_merge(['id' => $id], $record));

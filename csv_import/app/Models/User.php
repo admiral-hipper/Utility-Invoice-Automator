@@ -5,17 +5,22 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\UserRole;
+use App\Observers\UserObserver;
+use App\Policies\UserPolicy;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+#[ObservedBy(UserObserver::class), UsePolicy(UserPolicy::class)]
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -26,6 +31,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -51,15 +57,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function customer(): HasMany
+    public function customers(): HasMany
     {
         return $this->hasMany(Customer::class);
     }
 
     /**
      * Determine if user is admin
-     * 
-     * @return bool
      */
     public function isAdmin(): bool
     {

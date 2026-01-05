@@ -9,5 +9,5 @@ enum Service: string
     case HEATING = 'heating';
     case TERRITORY = 'territory';
     case WATER = 'water';
-    
+
 }

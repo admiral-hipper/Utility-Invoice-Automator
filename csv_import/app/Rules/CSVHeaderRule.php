@@ -16,14 +16,16 @@ class CSVHeaderRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!is_object($value) || !method_exists($value, 'getRealPath')) {
+        if (! is_object($value) || ! method_exists($value, 'getRealPath')) {
             $fail('Invalid uploaded file.');
+
             return;
         }
 
         $h = @fopen($value->getRealPath(), 'r');
-        if (!$h) {
+        if (! $h) {
             $fail('Cannot read uploaded file.');
+
             return;
         }
 
@@ -32,7 +34,7 @@ class CSVHeaderRule implements ValidationRule
 
         $missing = array_diff($this->requiredColumns, $header);
         if ($missing) {
-            $fail('Missing required CSV columns: ' . implode(', ', $missing));
+            $fail('Missing required CSV columns: '.implode(', ', $missing));
         }
     }
 }

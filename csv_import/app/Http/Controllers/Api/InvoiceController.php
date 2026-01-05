@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Invoice;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the invoice.
      */
@@ -20,6 +23,7 @@ class InvoiceController extends Controller
         $imports = Invoice::query()
             ->latest()
             ->paginate($perPage);
+
         return $imports->toResourceCollection();
     }
 
@@ -32,6 +36,7 @@ class InvoiceController extends Controller
         $imports = Invoice::query()->where('customer_id', $request->user()->customer->id)
             ->latest()
             ->paginate($perPage);
+
         return $imports->toResourceCollection();
     }
 

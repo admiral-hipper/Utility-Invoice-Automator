@@ -7,12 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ImportJob;
 use App\Models\Import;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
 class ImportController extends Controller
 {
+    use AuthorizesRequests;
 
     /**
      * Display a listing of the resource.
@@ -25,6 +27,7 @@ class ImportController extends Controller
         $imports = Import::query()
             ->latest()
             ->paginate($perPage);
+
         return $imports->toResourceCollection();
     }
 
@@ -43,17 +46,18 @@ class ImportController extends Controller
     {
         $file = $request->file('import_file');
         $period = $request->input('period') ?? Carbon::now()->format('Y-m');
-        if (!Carbon::canBeCreatedFromFormat($period, 'Y-m')) {
+        if (! Carbon::canBeCreatedFromFormat($period, 'Y-m')) {
             throw new ImportException('Period date is invalid (Format should be Y-m)');
         }
-        $filename = 'Import_' . $period . '_' . Carbon::now()->format('YmdHis') . '.csv';
+        $filename = 'Import_'.$period.'_'.Carbon::now()->format('YmdHis').'.csv';
         Storage::disk('import')->put($filename, $file->get());
         $filepath = Storage::disk('import')->path($filename);
         $import = Import::factory([
             'period' => $period,
-            'file_path' => $filepath
+            'file_path' => $filepath,
         ])->create();
         ImportJob::dispatch($import);
+
         return $import->toResource();
     }
 

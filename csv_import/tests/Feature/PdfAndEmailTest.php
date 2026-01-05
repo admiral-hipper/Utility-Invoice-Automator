@@ -16,13 +16,13 @@ class PdfAndEmailTest extends TestCase
 
     public function test_email_job_sends_invoice_if_job_exists(): void
     {
-        if (!class_exists(\App\Jobs\SendInvoiceEmailJob::class)) {
+        if (! class_exists(\App\Jobs\SendInvoiceEmailJob::class)) {
             $this->markTestSkipped('SendInvoiceEmailJob not found.');
         }
-        if (!class_exists(\App\Mail\InvoiceMail::class)) {
+        if (! class_exists(\App\Mail\InvoiceMail::class)) {
             $this->markTestSkipped('InvoiceMail not found.');
         }
-        if (!class_exists(\App\Services\Invoice\InvoiceGenerator::class)) {
+        if (! class_exists(\App\Services\Invoice\InvoiceGenerator::class)) {
             $this->markTestSkipped('InvoicePdfService not found.');
         }
 
@@ -44,6 +44,6 @@ class PdfAndEmailTest extends TestCase
 
         dispatch_sync(new \App\Jobs\SendInvoiceEmailJob($invoice->id, $customer->email));
 
-        Mail::assertSent(\App\Mail\InvoiceMail::class, fn($m) => $m->hasTo('client@example.com'));
+        Mail::assertSent(\App\Mail\InvoiceMail::class, fn ($m) => $m->hasTo('client@example.com'));
     }
 }

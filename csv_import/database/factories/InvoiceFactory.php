@@ -25,8 +25,8 @@ class InvoiceFactory extends Factory
             'import_id' => Import::factory(),
             'period' => $period,
 
-            'invoice_no' => 'INV-' . now()->format('Ym') . '-' . str_pad((string) $this->faker->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
-            'payment_ref' => 'PAY:INV-' . now()->format('Ym') . '-000001',
+            'invoice_no' => 'INV-'.now()->format('Ym').'-'.str_pad((string) $this->faker->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
+            'payment_ref' => 'PAY:INV-'.now()->format('Ym').str_pad((string) $this->faker->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
 
             'currency' => 'RON',
             'due_date' => now()->addDays(10)->toDateString(),

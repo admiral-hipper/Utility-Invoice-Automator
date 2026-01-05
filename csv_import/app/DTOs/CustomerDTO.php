@@ -7,12 +7,12 @@ use App\Traits\ToArray;
 
 class CustomerDTO
 {
-    use ToArray, StaticCreateSelf;
+    use StaticCreateSelf, ToArray;
 
     public function __construct(
-        readonly public string $full_name,
-        readonly public string $phone,
-        readonly public string $house_address,
-        readonly public string $apartment
+        public readonly string $full_name,
+        public readonly string $phone,
+        public readonly string $house_address,
+        public readonly string $apartment
     ) {}
 }

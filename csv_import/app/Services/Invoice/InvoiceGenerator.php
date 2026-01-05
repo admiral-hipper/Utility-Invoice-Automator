@@ -23,6 +23,7 @@ class InvoiceGenerator
             'paymentRef' => $this->invoice->payment_ref,
             'qrBase64' => $this->qrBase64,
         ])->setPaper('a4');
+
         return $pdf;
     }
 }

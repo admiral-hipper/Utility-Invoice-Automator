@@ -11,10 +11,11 @@ class ImportPolicy
     /**
      * Perform pre-authorization checks.
      */
-    public function before(User $user, string $ability): bool|null
+    public function before(User $user, string $ability): ?bool
     {
         return $user->isAdmin();
     }
+
     /**
      * Determine whether the user can view any models.
      */
@@ -31,8 +32,9 @@ class ImportPolicy
         if ($user->isAdmin()) {
             return true;
         }
+
         return $import->invoices()
-            ->whereHas('customer', fn($q) => $q->where('user_id', $user->id))
+            ->whereHas('customer', fn ($q) => $q->where('user_id', $user->id))
             ->exists();
     }
 
@@ -76,6 +78,7 @@ class ImportPolicy
         if ($user->isAdmin()) {
             return true;
         }
+
         return false;
     }
 }

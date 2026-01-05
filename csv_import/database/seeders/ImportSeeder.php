@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Import;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,7 +30,7 @@ class ImportSeeder extends Seeder
             [
                 'period' => '2025-10',
                 'original_name' => 'Import_2025-10-14-234567.csv',
-                'csv' => <<<CSV
+                'csv' => <<<'CSV'
 first_name,last_name,phone,house_address,apartment,gas,electricity,heating,territory,water,currency
 Andrei,Popescu,+40720100101,Str. Lalelelor 12,10,120.50,85.20,210.00,32.00,55.10,RON
 Ioana,Ionescu,+40720100102,Str. Lalelelor 12,11,98.30,74.00,190.00,32.00,49.80,RON
@@ -43,7 +42,7 @@ CSV,
             [
                 'period' => '2025-11',
                 'original_name' => 'Import_2025-11-20-123444.csv',
-                'csv' => <<<CSV
+                'csv' => <<<'CSV'
 first_name,last_name,phone,house_address,apartment,gas,electricity,heating,territory,water,currency
 Andrei,Popescu,+40720100101,Str. Lalelelor 12,10,140.00,90.10,260.00,32.00,58.40,RON
 Ioana,Ionescu,+40720100102,Str. Lalelelor 12,11,115.20,80.50,245.00,32.00,51.30,RON
@@ -55,7 +54,7 @@ CSV,
             [
                 'period' => '2025-12',
                 'original_name' => 'Import_2025-12-27-123456.csv',
-                'csv' => <<<CSV
+                'csv' => <<<'CSV'
 first_name,last_name,phone,house_address,apartment,gas,electricity,heating,territory,water,currency
 Andrei,Popescu,+40720100101,Str. Lalelelor 12,10,160.30,95.40,310.00,32.00,60.00,RON
 Ioana,Ionescu,+40720100102,Str. Lalelelor 12,11,132.90,86.10,295.00,32.00,53.20,RON

@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Services\Import\ImportManager;
 use App\Services\Import\Importers\CSVImporter;
+use App\Services\Import\ImportManager;
+use Illuminate\Support\ServiceProvider;
+
 // use App\Services\Import\Importers\XlsxImporter;
 
 class ImportServiceProvider extends ServiceProvider

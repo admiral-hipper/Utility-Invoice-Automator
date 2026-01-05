@@ -12,7 +12,7 @@ class InvoicePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return true;
     }
 
     /**
@@ -23,7 +23,13 @@ class InvoicePolicy
         if ($user->id == $invoice->customer->user_id) {
             return true;
         }
+
         return false;
+    }
+
+    public function before(User $user, string $ability): ?bool
+    {
+        return $user->isAdmin() ? true : null;
     }
 
     /**

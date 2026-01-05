@@ -45,25 +45,25 @@ class ImportJob implements ShouldQueue
                 $dueDate = Carbon::now()->addDays(10);
                 $customerId = Customer::query()
                     ->where('phone', '=', $row->phone)->where('email', '=', $row->email)
-                    ->firstOr(callback: fn() => throw new ImportException("Cannot find Customer record for {$row->full_name}({$row->email}, {$row->phone})"));
+                    ->firstOr(callback: fn () => throw new ImportException("Cannot find Customer record for {$row->full_name}({$row->email}, {$row->phone})"));
 
                 [$invoiceNo, $paymentRef] = app(InvoiceNumberService::class)->nextInvoiceNo($period); // '2025-12'
 
                 $invoice = Invoice::factory([
                     'customer_id' => $customerId,
-                    'import_id'   => $this->import->id,
-                    'period'      => $period,
+                    'import_id' => $this->import->id,
+                    'period' => $period,
 
-                    'invoice_no'  => $invoiceNo,
+                    'invoice_no' => $invoiceNo,
                     'payment_ref' => $paymentRef,
 
-                    'currency'    => 'RON',
-                    'due_date'    => $dueDate,
+                    'currency' => $row->currency,
+                    'due_date' => $dueDate,
 
-                    'status'      => InvoiceStatus::DRAFT,
-                    'issued_at'   => null,
+                    'status' => InvoiceStatus::DRAFT,
+                    'issued_at' => null,
 
-                    'total'    => $this->calcSubTotal($row),
+                    'total' => $this->calcSubTotal($row),
                 ])->create();
                 $this->createInvoiceItems($invoice, $row);
                 InvoiceJob::dispatch($invoice);
@@ -77,7 +77,7 @@ class ImportJob implements ShouldQueue
             $this->import->status = ImportStatus::FAILED;
             $this->import->errors = $e->getMessage();
             $this->import->save();
-            Log::emergency('Import failed with message: ' . $e->getMessage());
+            Log::emergency('Import failed with message: '.$e->getMessage());
             throw $e;
         }
     }
@@ -93,19 +93,20 @@ class ImportJob implements ShouldQueue
             InvoiceItem::create([
                 'invoice_id' => $invoice->id,
                 'service' => $service->value,
-                'amount' => $row->{$service->value}
+                'amount' => $row->{$service->value},
             ]);
         }
     }
 
     protected function zipImport(string $filepath): string
     {
-        $zip = new ZipArchive();
-        $filename = 'ARCHIVED_' . basename($filepath) . '.zip';
+        $zip = new ZipArchive;
+        $filename = 'ARCHIVED_'.basename($filepath).'.zip';
         $zipFilePath = Storage::disk('archival')->path($filename);
         $zip->open($zipFilePath);
         $zip->addFile($filepath, basename($filepath));
         $zip->close();
+
         return $zipFilePath;
     }
 }
