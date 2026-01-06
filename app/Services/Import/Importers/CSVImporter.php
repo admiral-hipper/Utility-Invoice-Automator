@@ -22,7 +22,7 @@ class CSVImporter extends Importer
 
     public function getRows(string $filepath): Generator
     {
-        $this->csv = Reader::from($filepath, 'r')->setHeaderOffset(0)->setDelimiter(';');
+        $this->csv = Reader::from($filepath, 'r')->setHeaderOffset(0)->setDelimiter(',');
         $this->validateHeader($this->csv->getHeader());
         foreach ($this->csv->getRecords() as $id => $record) {
             $this->validateRow(array_merge(['id' => $id], $record));
