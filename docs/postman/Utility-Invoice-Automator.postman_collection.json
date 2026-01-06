@@ -1,0 +1,679 @@
+{
+  "info": {
+    "name": "Utility Invoice Automator API",
+    "_postman_id": "1d19cb78-6954-43d0-bee6-805f71ed6acc",
+    "description": "Postman collection generated for Utility-Invoice-Automator Laravel API (Sanctum).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@demo.test"
+    },
+    {
+      "key": "adminPassword",
+      "value": "secret123"
+    },
+    {
+      "key": "customerEmail",
+      "value": "customer@example.com"
+    },
+    {
+      "key": "customerPassword",
+      "value": "password"
+    },
+    {
+      "key": "importId",
+      "value": "1"
+    },
+    {
+      "key": "customerId",
+      "value": "1"
+    },
+    {
+      "key": "invoiceId",
+      "value": "1"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (admin or customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Returns a Sanctum personal access token. Token is auto-saved to collection variable `token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "try {",
+                  "  const json = pm.response.json();",
+                  "  if (json?.data?.token) {",
+                  "    pm.collectionVariables.set('token', json.data.token);",
+                  "  }",
+                  "} catch (e) {}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Returns current authenticated user."
+          }
+        },
+        {
+          "name": "Logout (revoke current token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Revokes the current access token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin / Imports",
+      "item": [
+        {
+          "name": "List imports (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/imports?per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imports"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Admin-only. Query params: per_page (1..100)."
+          }
+        },
+        {
+          "name": "Show import",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/imports/{{importId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imports",
+                "{{importId}}"
+              ]
+            },
+            "description": "Admin-only."
+          }
+        },
+        {
+          "name": "Download import file",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/csv"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/imports/{{importId}}/download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imports",
+                "{{importId}}",
+                "download"
+              ]
+            },
+            "description": "Admin-only. Streams the stored CSV file."
+          }
+        },
+        {
+          "name": "Create import (upload CSV)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/imports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "imports"
+              ]
+            },
+            "description": "Admin-only. Uploads CSV. Validates headers, stores file, creates Import record and dispatches ImportJob.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "import_file",
+                  "type": "file",
+                  "src": [],
+                  "description": "CSV file with required headers."
+                },
+                {
+                  "key": "period",
+                  "type": "text",
+                  "value": "2026-01",
+                  "description": "Optional. Format: Y-m (e.g., 2026-01)."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin / Customers",
+      "item": [
+        {
+          "name": "List customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "description": "Admin-only. Lists customers with related user."
+          }
+        },
+        {
+          "name": "Create customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "description": "Admin-only. Creates a customer bound to the authenticated user_id unless your backend overrides it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"house_address\": \"Str. Example 1, Bucharest\",\n  \"phone\": \"+40 700 000 000\",\n  \"apartment\": \"12\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Show customer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "description": "Admin-only."
+          }
+        },
+        {
+          "name": "Update customer (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "description": "Admin-only. Full update. Use PATCH if you want partial updates.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"John Doe Updated\",\n  \"email\": \"john.doe@example.com\",\n  \"house_address\": \"Str. Example 2, Bucharest\",\n  \"phone\": \"+40 700 000 111\",\n  \"apartment\": \"14\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update customer (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "description": "Admin-only. Partial update.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+40 700 123 456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete customer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "description": "Admin-only. Deletes the customer (if policy allows)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin / Invoices",
+      "item": [
+        {
+          "name": "List invoices (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/invoices?per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invoices"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Admin-only. Query params: per_page (1..100)."
+          }
+        },
+        {
+          "name": "Show invoice",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/invoices/{{invoiceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invoices",
+                "{{invoiceId}}"
+              ]
+            },
+            "description": "Admin-only."
+          }
+        },
+        {
+          "name": "Get invoice PDF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/pdf"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/invoices/{{invoiceId}}/pdf",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invoices",
+                "{{invoiceId}}",
+                "pdf"
+              ]
+            },
+            "description": "Admin-only. Streams the invoice PDF (route exists in this project)."
+          }
+        },
+        {
+          "name": "Issue invoice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/invoices/{{invoiceId}}/issue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invoices",
+                "{{invoiceId}}",
+                "issue"
+              ]
+            },
+            "description": "Admin-only. Marks invoice as issued (route exists in this project)."
+          }
+        },
+        {
+          "name": "Mark invoice as paid",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/invoices/{{invoiceId}}/mark-paid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invoices",
+                "{{invoiceId}}",
+                "mark-paid"
+              ]
+            },
+            "description": "Admin-only. Marks invoice as paid (route exists in this project)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer / Self-service",
+      "item": [
+        {
+          "name": "My customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "customers"
+              ]
+            },
+            "description": "Customer-only. Returns customers assigned to the authenticated user."
+          }
+        },
+        {
+          "name": "My customer (show)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "description": "Customer-only. Requires ability to view this customer."
+          }
+        },
+        {
+          "name": "My invoices (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me/invoices?per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "invoices"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Customer-only. Returns invoices for the authenticated user's customers."
+          }
+        },
+        {
+          "name": "My invoice (show)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me/invoices/{{invoiceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "invoices",
+                "{{invoiceId}}"
+              ]
+            },
+            "description": "Customer-only. Requires ability to view this invoice."
+          }
+        }
+      ]
+    }
+  ]
+}

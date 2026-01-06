@@ -18,6 +18,8 @@ class ImportResource extends JsonResource
             'url' => route('download-import', ['import' => $this]),
             'period' => $this->period,
             'total_rows' => $this->total_rows,
+            'errors' => $this->errors,
+            'status' => $this->status,
         ];
     }
 }
