@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Exceptions\ImportException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ImportRequest;
 use App\Jobs\ImportJob;
 use App\Models\Import;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -42,19 +44,19 @@ class ImportController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResource
+    public function store(ImportRequest $request): JsonResource
     {
         $file = $request->file('import_file');
         $period = $request->input('period') ?? Carbon::now()->format('Y-m');
         if (! Carbon::canBeCreatedFromFormat($period, 'Y-m')) {
             throw new ImportException('Period date is invalid (Format should be Y-m)');
         }
-        $filename = 'Import_'.$period.'_'.Carbon::now()->format('YmdHis').'.csv';
+        $filename = 'Import_' . $period . '_' . Carbon::now()->format('YmdHis') . '.csv';
         Storage::disk('import')->put($filename, $file->get());
-        $filepath = Storage::disk('import')->path($filename);
+
         $import = Import::factory([
             'period' => $period,
-            'file_path' => $filepath,
+            'file_path' => $filename,
         ])->create();
         ImportJob::dispatch($import);
 
@@ -71,7 +73,10 @@ class ImportController extends Controller
 
     public function download(Import $import)
     {
-        return Storage::download($import->file_path, basename($import->file_path));
+        if (!Storage::disk('import')->exists($import->file_path)) {
+            return new JsonResponse(['code' => 404, 'message' => 'File not found'], 404);
+        }
+        return Storage::disk('import')->download($import->file_path, basename($import->file_path));
     }
 
     /**
@@ -87,7 +92,7 @@ class ImportController extends Controller
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice): JsonResource
     {
-        //
+        
     }
 
     /**

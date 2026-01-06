@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Invoice;
+use App\Services\Storage\CustomerStorage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvoiceController extends Controller
 {
@@ -33,11 +36,16 @@ class InvoiceController extends Controller
         $perPage = (int) $request->query('per_page', 15);
         $perPage = max(1, min($perPage, 100)); // clamp
 
-        $imports = Invoice::query()->where('customer_id', $request->user()->customer->id)
+        $imports = Invoice::query()->whereIn('customer_id', $request->user()->customers->pluck('id'))
             ->latest()
             ->paginate($perPage);
 
         return $imports->toResourceCollection();
+    }
+
+    public function download(Invoice $invoice): StreamedResponse
+    {
+        return Storage::disk('invoices')->download($invoice->pdf_path, basename($invoice->pdf_path), ['Content-Type' => 'application/pdf']);
     }
 
     /**
